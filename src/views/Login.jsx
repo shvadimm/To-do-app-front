@@ -1,0 +1,83 @@
+
+import { Link } from 'react-router-dom'
+import { LockClosedIcon } from '@heroicons/react/20/solid'
+export default function Login() {
+    return (
+        <>
+            <h2 className="mt-6 text-center text-3xl 4vw font-bold tracking-tight text-gray-900">
+                Connectez-vous à votre compte
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+                Vous n'avez pas de compte ?{' '}
+                <Link
+                    to="/singup"
+                    className="font-medium text-yellow-500 hover:text-yellow-600 transition-all duration-500"
+                >
+                    enregistre une
+                </Link>
+            </p>
+            <form className="mt-8 space-y-6" action="#" method="POST">
+                <input type="hidden" name="remember" defaultValue="true" />
+                <div className="-space-y-px rounded-md shadow-sm">
+                    <div>
+                        <label htmlFor="email-address" className="sr-only">
+                            Adresse e-mail
+                        </label>
+                        <input
+                            id="email-address"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            required
+                            className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
+                            placeholder="Email address"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="sr-only">
+                            Password
+                        </label>
+                        <input
+                            id="password"
+                            name="password"
+                            type="password"
+                            autoComplete="current-password"
+                            required
+                            className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
+                            placeholder="Password"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+
+                    <div className="text-sm">
+                        <p className="mt-2 text-center text-sm text-gray-600">
+                            Oublier votre mot de passe ?{' '}
+                            <Link
+                                to="/forgetpassword"
+                                className="font-medium text-yellow-500 hover:text-yellow-600 transition-all duration-500"
+                            >
+                                Click ici !
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <button
+                        type="submit"
+                        className="group relative flex w-full justify-center rounded-md bg-yellow-400 py-2 px-3 text-sm font-semibold text-black hover:bg-yellow-500 transition-all duration-1000 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                    >
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <LockClosedIcon className="h-5 w-5 text-black group-hover:text-black" aria-hidden="true" />
+                        </span>
+                        Sign in
+                    </button>
+                </div>
+            </form>
+        </>
+    )
+}
+
+
