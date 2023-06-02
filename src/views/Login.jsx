@@ -1,7 +1,24 @@
 
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { LockClosedIcon } from '@heroicons/react/20/solid'
 export default function Login() {
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+    const handleLogin = async (event) => {
+        event.preventDefault();
+
+        try {
+            axiosClient.post('user/login', { email, password })
+            setEmail("")
+            setPassword("")
+            navigate("/")
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <>
             <h2 className="mt-6 text-center text-3xl 4vw font-bold tracking-tight text-gray-900">
@@ -16,15 +33,16 @@ export default function Login() {
                     enregistre une
                 </Link>
             </p>
-            <form className="mt-8 space-y-6" action="#" method="POST">
+            <form onSubmit={handleLogin} className="mt-8 space-y-6" action="#" method="POST">
                 <input type="hidden" name="remember" defaultValue="true" />
                 <div className="-space-y-px rounded-md shadow-sm">
                     <div>
-                        <label htmlFor="email-address" className="sr-only">
+                        <label>
                             Adresse e-mail
                         </label>
                         <input
-                            id="email-address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             name="email"
                             type="email"
                             autoComplete="email"
@@ -34,13 +52,13 @@ export default function Login() {
                         />
                     </div>
                     <div>
-                        <label htmlFor="password" className="sr-only">
+                        <label>
                             Password
                         </label>
                         <input
-                            id="password"
-                            name="password"
                             type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                             autoComplete="current-password"
                             required
                             className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
