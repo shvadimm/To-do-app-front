@@ -3,8 +3,10 @@ import { Link, useNavigate } from 'react-router-dom'
 import { LockClosedIcon } from '@heroicons/react/20/solid'
 import { useState } from 'react'
 import axiosClient from '../axios.js'
+import { userStateContext } from '../context/ContextProvider.jsx'
 
 export default function Singup() {
+    const { setCurrentUser, setUserToken } = userStateContext();
     const [email, setEmail] = useState("");
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
@@ -14,19 +16,24 @@ export default function Singup() {
 
     const handleRegister = async (event) => {
         event.preventDefault();
-        setError({ __html: '' })
+        setError({ __html: '' });
+
         try {
-            axiosClient.post('user/singup', {
+            const response = await axiosClient.post('user/singup', {
                 email,
                 name,
                 password,
                 password_confirmation
             });
-            setEmail("")
-            setName("")
-            setPassword("")
-            setPasswordConfirmation("")
-            navigate("/")
+
+            setEmail("");
+            setName("");
+            setPassword("");
+            setPasswordConfirmation("");
+
+            setCurrentUser(response.data.user);
+            setUserToken(response.data.token);
+
         } catch (e) {
             console.log(e);
         }

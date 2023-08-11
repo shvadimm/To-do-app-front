@@ -2,7 +2,7 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { LockClosedIcon } from '@heroicons/react/20/solid'
 export default function Login() {
-
+    const { setCurrentUser, setUserToken } = userStateContextserStateContext();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
@@ -14,6 +14,8 @@ export default function Login() {
             setEmail("")
             setPassword("")
             navigate("/")
+            setCurrentUser(response.data.user);
+            setUserToken(response.data.token);
         } catch (error) {
             console.log(error);
         }

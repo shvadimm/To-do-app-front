@@ -1,12 +1,12 @@
-import { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
+import axiosClient from '../axios.js'
 import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { NavLink, Outlet } from "react-router-dom";
+import { Bars3Icon, UserIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { NavLink, Navigate, Outlet } from "react-router-dom";
+import { userStateContext } from '../context/ContextProvider';
 
-const user = {
-    name: window.name,
-    email: window.email,
-}
+
+
 const navigation = [
     { name: 'My to do', to: '/' },
 ]
@@ -19,11 +19,35 @@ function classNames(...classes) {
 }
 
 export default function DefaultLayout() {
+    const { currentUser, userToken, setCurrentUser, setUserToken } = userStateContext();
+
+    if (!userToken) {
+        return <Navigate to='login' ></Navigate>
+    }
     const logout = (ev) => {
         ev.preventDefault();
-        console.log("click")
+        try {
+            axiosClient.post('/logout');
+            setCurrentUser({});
+            setUserToken(null);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-    }
+    useEffect(() => {
+        axiosClient.get('/me')
+            .then(({ data }) => {
+                if (data) {
+                    setCurrentUser(data)
+
+                } else {
+                    localStorage.removeItem('TOKEN');
+                    window.location.reload();
+
+                }
+            })
+    }, [])
     return (
         <>
             <div className="min-h-full">
@@ -41,6 +65,7 @@ export default function DefaultLayout() {
                                             />
                                         </div>
                                         <div className="hidden md:block">
+                                            {userToken}
                                             <div className="ml-10 flex items-baseline space-x-4">
                                                 {navigation.map((item) => (
                                                     <a
@@ -61,6 +86,7 @@ export default function DefaultLayout() {
                                         </div>
                                     </div>
                                     <div className="hidden md:block">
+
                                         <div className="ml-4 flex items-center md:ml-6">
 
                                             {/* Profile dropdown */}
@@ -68,7 +94,7 @@ export default function DefaultLayout() {
                                                 <div>
                                                     <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                                         <span className="sr-only">Open user menu</span>
-                                                        <img className="h-8 w-8 rounded-full" src="/Logo.png" alt="" />
+                                                        <UserIcon className="w-8 h-8 bg-black/25 p-2 rounded-full text-white" />
                                                     </Menu.Button>
                                                 </div>
                                                 <Transition
@@ -129,11 +155,11 @@ export default function DefaultLayout() {
                                 <div className="border-t border-gray-700 pt-4 pb-3">
                                     <div className="flex items-center px-5">
                                         <div className="flex-shrink-0">
-                                            <img className="h-10 w-10 rounded-full" src={user.imageUrl} alt="" />
+                                            <UserIcon className="w-8 h-8 bg-black/25 p-2 rounded-full text-white" />
                                         </div>
                                         <div className="ml-3">
-                                            <div className="text-base font-medium leading-none text-white">{user.name}</div>
-                                            <div className="text-sm font-medium leading-none text-gray-400">{user.email}</div>
+                                            <div className="text-base font-medium leading-none text-white">{currentUser.name}</div>
+                                            <div className="text-sm font-medium leading-none text-gray-400">{currentUser.email}</div>
                                         </div>
 
                                     </div>
