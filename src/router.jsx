@@ -10,11 +10,10 @@ const router = createBrowserRouter([
         path: '/',
         element: <DefaultLayout />,
         children: [
-
             {
-                path: "Listtodo",
+                path: '/Listtodos',
                 element: <Listtodo />
-            }
+            },
 
         ]
     },
@@ -30,10 +29,6 @@ const router = createBrowserRouter([
             {
                 path: '/Singup',
                 element: <Singup />
-            },
-            {
-                path: '/Listtodo',
-                element: <Listtodo />
             },
         ]
     }

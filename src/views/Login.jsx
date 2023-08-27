@@ -1,25 +1,58 @@
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LockClosedIcon } from '@heroicons/react/20/solid';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axiosClient from '../axios.js';
+import { userStateContext } from '../context/ContextProvider.jsx';
 
-import { Link, useNavigate } from 'react-router-dom'
-import { LockClosedIcon } from '@heroicons/react/20/solid'
 export default function Login() {
-    const { setCurrentUser, setUserToken } = userStateContextserStateContext();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const { setCurrentUser, setUserToken } = userStateContext();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
     const navigate = useNavigate();
+
     const handleLogin = async (event) => {
         event.preventDefault();
 
         try {
-            axiosClient.post('user/login', { email, password })
-            setEmail("")
-            setPassword("")
-            navigate("/")
+            const response = await axiosClient.post('user/login', {
+                email,
+                password,
+            });
+
+            setEmail('');
+            setPassword('');
+
             setCurrentUser(response.data.user);
             setUserToken(response.data.token);
+
         } catch (error) {
-            console.log(error);
+
+            // Display API error message using toast
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            } else {
+                toast.error('An error occurred during login.', {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
         }
-    }
+    };
 
     return (
         <>
@@ -29,7 +62,7 @@ export default function Login() {
             <p className="mt-2 text-center text-sm text-gray-600">
                 Vous n'avez pas de compte ?{' '}
                 <Link
-                    to="/singup"
+                    to="/signup"
                     className="font-medium text-yellow-500 hover:text-yellow-600 transition-all duration-500"
                 >
                     enregistre une
@@ -96,8 +129,9 @@ export default function Login() {
                     </button>
                 </div>
             </form>
+
+            {/* Toast container */}
+            <ToastContainer position="top-right" autoClose={5000} />
         </>
-    )
+    );
 }
-
-

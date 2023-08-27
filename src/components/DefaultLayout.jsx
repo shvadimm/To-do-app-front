@@ -7,8 +7,8 @@ import { userStateContext } from '../context/ContextProvider';
 
 
 
-const navigation = [
-    { name: 'My to do', to: '/' },
+const todosNavigation = [
+    { name: 'My to do', to: '/Listtodos' },
 ]
 const userNavigation = [
     { name: 'Sign out', to: '/' },
@@ -24,19 +24,22 @@ export default function DefaultLayout() {
     if (!userToken) {
         return <Navigate to='login' ></Navigate>
     }
-    const logout = (ev) => {
+    const logout = async (ev) => {
         ev.preventDefault();
         try {
-            axiosClient.post('/logout');
+            await axiosClient.delete('/logout');
             setCurrentUser({});
             setUserToken(null);
+            // Afficher un message de succès
+            console.log('Déconnexion réussie');
         } catch (error) {
-            console.error(error);
+            // Afficher un message d'erreur
+            console.error('Erreur lors de la déconnexion', error);
         }
     };
 
     useEffect(() => {
-        axiosClient.get('/me')
+        axiosClient.get('/GetAuthUser')
             .then(({ data }) => {
                 if (data) {
                     setCurrentUser(data)
@@ -51,7 +54,7 @@ export default function DefaultLayout() {
     return (
         <>
             <div className="min-h-full">
-                <Disclosure as="nav" className="bg-gray-800">
+                <Disclosure as="nav" className="bg-orange-600">
                     {({ open }) => (
                         <>
                             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -61,20 +64,20 @@ export default function DefaultLayout() {
                                             <img
                                                 className="h-30 w-30"
                                                 src="/Logo.png"
-                                                alt="Your Company"
+                                                alt=""
                                             />
                                         </div>
                                         <div className="hidden md:block">
-                                            {userToken}
+
                                             <div className="ml-10 flex items-baseline space-x-4">
-                                                {navigation.map((item) => (
+                                                {todosNavigation.map((item) => (
                                                     <a
                                                         key={item.name}
-                                                        href={item.href}
+                                                        href={item.to}
                                                         className={classNames(
                                                             item.current
-                                                                ? 'bg-gray-900 text-white'
-                                                                : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                                ? 'bg-orange-900 text-white'
+                                                                : 'text-white hover:bg-orange-700 hover:text-white',
                                                             'rounded-md px-3 py-2 text-sm font-medium'
                                                         )}
                                                         aria-current={item.current ? 'page' : undefined}
@@ -94,7 +97,7 @@ export default function DefaultLayout() {
                                                 <div>
                                                     <Menu.Button className="flex max-w-xs items-center rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                                         <span className="sr-only">Open user menu</span>
-                                                        <UserIcon className="w-8 h-8 bg-black/25 p-2 rounded-full text-white" />
+                                                        <UserIcon className="w-8 h-8 bg-orange-200 p-2 rounded-full text-black" />
                                                     </Menu.Button>
                                                 </div>
                                                 <Transition
@@ -107,12 +110,14 @@ export default function DefaultLayout() {
                                                     leaveTo="transform opacity-0 scale-95"
                                                 >
                                                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                        <div className="text-base p-2 font-medium leading-none text-">{currentUser.name}</div>
+                                                        <div className="text-sm  p-2 font-medium leading-none text-gray-400">{currentUser.email}</div>
                                                         {userNavigation.map((item) => (
                                                             <Menu.Item key={item.name}>
                                                                 <a
                                                                     href="#"
                                                                     onClick={(ev) => logout(ev)}
-                                                                    className={'block px-4 py-2 text-sm text-gray-700'}
+                                                                    className={'block px-4 py-2 roun text-sm text-gray-700 hover:bg-orange-200 rounded-full'}
                                                                 >
                                                                     {item.name}
                                                                 </a>
@@ -125,8 +130,7 @@ export default function DefaultLayout() {
                                     </div>
                                     <div className="-mr-2 flex md:hidden">
                                         {/* Mobile menu button */}
-                                        <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-gray-800 p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                            <span className="sr-only">Open main menu</span>
+                                        <Disclosure.Button className="inline-flex items-center justify-center rounded-md bg-orange-200 p-2 text-black-400 hover:bg-orange-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                                             {open ? (
                                                 <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
                                             ) : (
@@ -139,12 +143,12 @@ export default function DefaultLayout() {
 
                             <Disclosure.Panel className="md:hidden">
                                 <div className="space-y-1 px-2 pt-2 pb-3 sm:px-3">
-                                    {navigation.map((item) => (
+                                    {todosNavigation.map((item) => (
                                         <NavLink
                                             key={item.name}
                                             to={item.to}
                                             className={({ isActive }) => classNames(
-                                                isActive ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                isActive ? 'bg-white text-black' : 'text-white hover:bg-orange-200 hover:text-black',
                                                 'block rounded-md px-3 py-2 text-base font-medium'
                                             )}
                                         >
@@ -152,14 +156,14 @@ export default function DefaultLayout() {
                                         </NavLink>
                                     ))}
                                 </div>
-                                <div className="border-t border-gray-700 pt-4 pb-3">
+                                <div className="border-t border-orange-200 pt-4 pb-3">
                                     <div className="flex items-center px-5">
                                         <div className="flex-shrink-0">
                                             <UserIcon className="w-8 h-8 bg-black/25 p-2 rounded-full text-white" />
                                         </div>
                                         <div className="ml-3">
-                                            <div className="text-base font-medium leading-none text-white">{currentUser.name}</div>
-                                            <div className="text-sm font-medium leading-none text-gray-400">{currentUser.email}</div>
+                                            <div className="text-base font-medium leading-none text-black">{currentUser.name}</div>
+                                            <div className="text-sm font-medium leading-none text-white">{currentUser.email}</div>
                                         </div>
 
                                     </div>
@@ -169,7 +173,7 @@ export default function DefaultLayout() {
                                             as="a"
                                             herf='#'
                                             onClick={(ev) => logout(ev)}
-                                            className="block rounded-md px-3 py-2 text-base font-medium text-gray-400 hover:bg-gray-700 hover:text-white"
+                                            className="block rounded-md px-3 py-2 text-base font-medium text-white hover:bg-orange-200 hover:text-black"
                                         >
                                             Sing out
                                         </Disclosure.Button>
@@ -181,8 +185,8 @@ export default function DefaultLayout() {
                 </Disclosure>
 
                 <header className="bg-white shadow">
-                    <div className="mx-auto max-w-7xl py-6 px-4 sm:px-6 lg:px-8">
-                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Todolist</h1>
+                    <div className="mx-auto max-w-6 py-6 px-4 sm:px-6 lg:px-8">
+                        <h1 className="text-3xl font-bold tracking-tight text-gray-900">TO-DO-LIFE</h1>
                     </div>
                 </header>
                 <main>

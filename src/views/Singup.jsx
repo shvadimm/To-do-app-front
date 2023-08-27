@@ -1,9 +1,10 @@
-
-import { Link, useNavigate } from 'react-router-dom'
-import { LockClosedIcon } from '@heroicons/react/20/solid'
-import { useState } from 'react'
-import axiosClient from '../axios.js'
-import { userStateContext } from '../context/ContextProvider.jsx'
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { LockClosedIcon } from '@heroicons/react/20/solid';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import axiosClient from '../axios.js';
+import { userStateContext } from '../context/ContextProvider.jsx';
 
 export default function Singup() {
     const { setCurrentUser, setUserToken } = userStateContext();
@@ -34,9 +35,32 @@ export default function Singup() {
             setCurrentUser(response.data.user);
             setUserToken(response.data.token);
 
-        } catch (e) {
-            console.log(e);
+        } catch (error) {
+
+            // Display API error message using toast
+            if (error.response && error.response.data && error.response.data.message) {
+                toast.error(error.response.data.message, {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            } else {
+                toast.error('An error occurred during registration.', {
+                    position: 'top-right',
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                });
+            }
         }
+
     };
     return (
         <>
@@ -126,6 +150,8 @@ export default function Singup() {
                     </button>
                 </div>
             </form>
+            {/* Toast container */}
+            <ToastContainer position="top-right" autoClose={5000} />
         </>
     )
 }

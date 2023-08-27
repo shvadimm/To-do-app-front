@@ -1,50 +1,209 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { userStateContext } from '../context/ContextProvider';
-import "../index.css"
+import axiosClient from '../axios';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 export default function Listtodo() {
     const [todos, setTodos] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const { currentUser, userToken } = userStateContext();
+    const [newTodo, setNewTodo] = useState('');
+    const [newBody, setNewBody] = useState('');
+    const [userid, setUserid] = useState('');
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [updatedTitle, setUpdatedTitle] = useState('');
+    const [updatedBody, setUpdatedBody] = useState('');
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [selectedTodo, setSelectedTodo] = useState(null);
 
-    if (!userToken) {
-        return <Navigate to='singup' ></Navigate>
-    }
+    useEffect(() => {
+        fetchTodos();
+        fetchUserId();
+    }, []);
 
-    else {
-        const getAllTodos = async () => {
-            try {
-                const response = await axios.get("/api/todos");
-                setTodos(response.data);
-                setLoading(false);
-            } catch (error) {
-                console.error("Erreur lors de la récupération des tâches :", error);
-                setLoading(false);
+    const fetchTodos = async () => {
+        try {
+            const response = await axiosClient.get('/todos');
+            setTodos(response.data);
+            setIsLoading(false);
+        } catch (error) {
+            setError('Error fetching todos.');
+            setIsLoading(false);
+        }
+    };
+
+    const fetchUserId = async () => {
+        try {
+            const response = await axiosClient.get('/GetAuthUser');
+            if (response.data) {
+                setUserid(response.data.id);
+            } else {
+                localStorage.removeItem('TOKEN');
+                window.location.reload();
             }
-        };
+        } catch (error) {
+            console.error('Error fetching user ID:', error);
+        }
+    };
 
-        useEffect(() => {
-            getAllTodos();
-        }, []);
+    const addTodo = async () => {
+        try {
+            const response = await axiosClient.post('/todos', {
+                title: newTodo,
+                body: newBody,
+                isdoned: 0,
+                user_id: userid
+            });
+            setNewTodo('');
+            setNewBody('');
+            fetchTodos();
+        } catch (error) {
+            console.error('Error adding todo:', error);
+        }
+    };
 
-        return (
-            <div>
-                {loading ? (
-                    <div class="progress">
-                        <p>loading</p>
-                        <div class="color"></div>
-                    </div>
-                ) : (
-                    <ul>
-                        {todos.map(todo => (
-                            <li key={todo.id}>{todo.title}</li>
-                        ))}
-                    </ul>
-                )}
+    const deleteTodo = async (id) => {
+        try {
+            await axiosClient.delete(`/todos/${id}`);
+            fetchTodos();
+        } catch (error) {
+            console.error('Error deleting todo:', error);
+        }
+    };
+
+    const handleToggleDone = async (id, isDone) => {
+        try {
+            await axiosClient.put(`/todos/${id}`, { isdoned: isDone ? 1 : 0 });
+            fetchTodos();
+        } catch (error) {
+            console.error('Error updating todo:', error);
+        }
+    };
+
+    const updateTodo = async () => {
+        try {
+            await axiosClient.put(`/todos/${selectedTodo.id}`, {
+                title: updatedTitle,
+                body: updatedBody
+            });
+            fetchTodos();
+            setUpdatedTitle('');
+            setUpdatedBody('');
+            setIsPopupOpen(false);
+            setSelectedTodo(null);
+        } catch (error) {
+            console.error('Error updating todo:', error);
+        }
+    };
+
+    return (
+        <div className="flex flex-col items-center justify-center min-h-screen">
+            <h1 className="text-3xl font-semibold my-4 text-orange-600">To-do list ✏️</h1>
+            <div className="mt-4 my-4">
+                <input
+                    type="text"
+                    value={newTodo}
+                    onChange={(e) => setNewTodo(e.target.value)}
+                    className="px-4 py-2 border rounded-lg"
+                    placeholder="Title"
+                />
+                <input
+                    type="text"
+                    value={newBody}
+                    onChange={(e) => setNewBody(e.target.value)}
+                    className="px-4 py-2 border rounded-lg ml-2"
+                    placeholder="Description"
+                />
+                <button
+                    onClick={addTodo}
+                    className="ml-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                >
+                    Add Todo
+                </button>
             </div>
-        );
-    }
-}
 
+            <ul className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : error ? (
+                    <p className="p-4 text-red-600 bg-red-100">{error}</p>
+                ) : (
+                    todos.map((todo) => (
+                        <li
+                            key={todo.id}
+                            className={`px-6 py-4  border-b border-gray-200 flex items-center justify-between ${todo.isdoned ? 'bg-gray-100' : ''
+                                }`}
+                        >
+                            <div>
+                                <span className={`font-semibold ${todo.isdoned ? 'line-through' : ''}`}>
+                                    {todo.title}
+                                </span>
+                                <p className="text-gray-600">{todo.body}</p>
+                            </div>
+                            <div className="flex items-center">
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={todo.isdoned}
+                                        onChange={() => handleToggleDone(todo.id, !todo.isdoned)}
+                                        className="form-checkbox h-5 w-5 text-green-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 "
+                                    />
+                                    <span className="ml-2">Done</span>
+                                </label>
+                                <button
+                                    onClick={() => {
+                                        setSelectedTodo(todo);
+                                        setIsPopupOpen(true);
+                                    }}
+                                    className="ml-2 px-2 py-1 bg-orange-300 text-white rounded-lg hover:bg-orange-400"
+                                >
+                                    Update to-do
+                                </button>
+                                <button
+                                    onClick={() => deleteTodo(todo.id)}
+                                    className="ml-2 px-2 py-1 bg-red-300 text-white rounded-lg hover:bg-red-400"
+                                >
+                                    Delete to-do
+                                </button>
+                            </div>
+                        </li>
+                    ))
+                )}
+            </ul>
+
+            {isPopupOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
+                    <div className="bg-white p-4 rounded-lg">
+                        <input
+                            type="text"
+                            value={updatedTitle}
+                            onChange={(e) => setUpdatedTitle(e.target.value)}
+                            className="px-2 py-1 border rounded-lg"
+                            placeholder="Title"
+                        />
+                        <input
+                            type="text"
+                            value={updatedBody}
+                            onChange={(e) => setUpdatedBody(e.target.value)}
+                            className="px-2 py-1 border rounded-lg ml-2"
+                            placeholder="description"
+                        />
+                        <div className="flex justify-end mt-2">
+                            <button
+                                onClick={updateTodo}
+                                className="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                            >
+                                Update
+                            </button>
+                            <button
+                                onClick={() => setIsPopupOpen(false)}
+                                className="ml-2 px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}
