@@ -14,6 +14,11 @@ export default function Listtodo() {
     const [updatedBody, setUpdatedBody] = useState('');
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [selectedTodo, setSelectedTodo] = useState(null);
+    // Filter todos to exclude completed todos
+    const todosToDisplay = todos.filter((todo) => !todo.isdoned);
+
+    // Filter completed todos
+    const completedTodos = todos.filter((todo) => todo.isdoned);
 
     useEffect(() => {
         fetchTodos();
@@ -96,73 +101,75 @@ export default function Listtodo() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center min-h-screen px-4 sm:px-8 lg:px-16">
             <h1 className="text-3xl font-semibold my-4 text-orange-600">To-do list ✏️</h1>
-            <div className="mt-4 my-4">
+            <div className="mt-4 my-4 flex flex-col sm:flex-row items-center sm:items-start">
                 <input
                     type="text"
                     value={newTodo}
                     onChange={(e) => setNewTodo(e.target.value)}
-                    className="px-4 py-2 border rounded-lg"
+                    className="px-4 py-2 border rounded-lg mb-2 sm:mb-0 sm:mr-2"
                     placeholder="Title"
                 />
                 <input
                     type="text"
                     value={newBody}
                     onChange={(e) => setNewBody(e.target.value)}
-                    className="px-4 py-2 border rounded-lg ml-2"
+                    className="px-4 py-2 border rounded-lg mb-2 sm:mb-0 sm:mr-2"
                     placeholder="Description"
                 />
                 <button
                     onClick={addTodo}
-                    className="ml-2 px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
                 >
                     Add Todo
                 </button>
             </div>
 
+            <h2 className="text-xl font-semibold my-4 text-orange-600">À faire </h2>
             <ul className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
                 {isLoading ? (
                     <p>Loading...</p>
                 ) : error ? (
                     <p className="p-4 text-red-600 bg-red-100">{error}</p>
                 ) : (
-                    todos.map((todo) => (
+                    todosToDisplay.map((todo) => (
                         <li
                             key={todo.id}
-                            className={`px-6 py-4  border-b border-gray-200 flex items-center justify-between ${todo.isdoned ? 'bg-gray-100' : ''
-                                }`}
+                            className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between ${todo.isdoned ? 'bg-gray-100' : ''}`}
                         >
-                            <div>
+                            <div className="mb-2 sm:mb-0 sm:flex-grow">
                                 <span className={`font-semibold ${todo.isdoned ? 'line-through' : ''}`}>
                                     {todo.title}
                                 </span>
                                 <p className="text-gray-600">{todo.body}</p>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex items-center mt-2 sm:mt-0">
                                 <label className="inline-flex items-center">
                                     <input
                                         type="checkbox"
                                         checked={todo.isdoned}
                                         onChange={() => handleToggleDone(todo.id, !todo.isdoned)}
-                                        className="form-checkbox h-5 w-5 text-green-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800 "
+                                        className="form-checkbox h-5 w-5 text-green-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
                                     />
-                                    <span className="ml-2">Done</span>
+                                    <span className="ml-2">Fait</span>
                                 </label>
                                 <button
                                     onClick={() => {
                                         setSelectedTodo(todo);
+                                        setUpdatedTitle(todo.title);
+                                        setUpdatedBody(todo.body);
                                         setIsPopupOpen(true);
                                     }}
                                     className="ml-2 px-2 py-1 bg-orange-300 text-white rounded-lg hover:bg-orange-400"
                                 >
-                                    Update to-do
+                                    Update
                                 </button>
                                 <button
                                     onClick={() => deleteTodo(todo.id)}
                                     className="ml-2 px-2 py-1 bg-red-300 text-white rounded-lg hover:bg-red-400"
                                 >
-                                    Delete to-do
+                                    Delete
                                 </button>
                             </div>
                         </li>
@@ -170,22 +177,56 @@ export default function Listtodo() {
                 )}
             </ul>
 
+            <h2 className="text-xl font-semibold my-4 text-green-600">Fait</h2>
+            <ul className="w-full max-w-md bg-white shadow-lg rounded-lg overflow-hidden">
+                {isLoading ? (
+                    <p>Loading...</p>
+                ) : error ? (
+                    <p className="p-4 text-red-600 bg-red-100">{error}</p>
+                ) : (
+                    completedTodos.map((todo) => (
+                        <li
+                            key={todo.id}
+                            className={`px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between`}
+                        >
+                            <div className="mb-2 sm:mb-0 sm:flex-grow">
+                                <span className={` font-semibold ${todo.isdoned ? 'line-through' : ''}`}>
+                                    {todo.title}
+
+                                </span>
+                                <p className="text-gray-600">{todo.body}</p>
+                            </div>
+                            <div className="flex items-center mt-2 sm:mt-0">
+                                <label className="inline-flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        checked={todo.isdoned}
+                                        onChange={() => handleToggleDone(todo.id, !todo.isdoned)}
+                                        className="form-checkbox h-5 w-5 text-green-400 rounded-full focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
+                                    />
+                                    <span className="ml-2">Fait</span>
+                                </label>
+                            </div>
+                        </li>
+                    ))
+                )}
+            </ul>
             {isPopupOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-75">
-                    <div className="bg-white p-4 rounded-lg">
+                    <div className="bg-white p-4 rounded-lg w-full sm:max-w-md">
                         <input
                             type="text"
                             value={updatedTitle}
                             onChange={(e) => setUpdatedTitle(e.target.value)}
-                            className="px-2 py-1 border rounded-lg"
+                            className="px-2 py-1 border rounded-lg mb-2"
                             placeholder="Title"
                         />
                         <input
                             type="text"
                             value={updatedBody}
                             onChange={(e) => setUpdatedBody(e.target.value)}
-                            className="px-2 py-1 border rounded-lg ml-2"
-                            placeholder="description"
+                            className="px-2 py-1 border rounded-lg mb-2"
+                            placeholder="Description"
                         />
                         <div className="flex justify-end mt-2">
                             <button

@@ -41,7 +41,7 @@ export default function Login() {
                     progress: undefined,
                 });
             } else {
-                toast.error('An error occurred during login.', {
+                toast.error('Une erreur s\'est produite lors de la connexion.', {
                     position: 'top-right',
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -62,10 +62,10 @@ export default function Login() {
             <p className="mt-2 text-center text-sm text-gray-600">
                 Vous n'avez pas de compte ?{' '}
                 <Link
-                    to="/signup"
+                    to="/singup"
                     className="font-medium text-yellow-500 hover:text-yellow-600 transition-all duration-500"
                 >
-                    enregistre une
+                    créez le !
                 </Link>
             </p>
             <form onSubmit={handleLogin} className="mt-8 space-y-6" action="#" method="POST">
@@ -83,12 +83,13 @@ export default function Login() {
                             autoComplete="email"
                             required
                             className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
-                            placeholder="Email address"
+                            placeholder="Adresse e-mail"
                         />
                     </div>
                     <div>
                         <label>
-                            Password
+                            Mot de passe
+
                         </label>
                         <input
                             type="password"
@@ -97,26 +98,10 @@ export default function Login() {
                             autoComplete="current-password"
                             required
                             className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
-                            placeholder="Password"
+                            placeholder="Mot de passe"
                         />
                     </div>
                 </div>
-
-                <div className="flex items-center justify-between">
-
-                    <div className="text-sm">
-                        <p className="mt-2 text-center text-sm text-gray-600">
-                            Oublier votre mot de passe ?{' '}
-                            <Link
-                                to="/forgetpassword"
-                                className="font-medium text-yellow-500 hover:text-yellow-600 transition-all duration-500"
-                            >
-                                Click ici !
-                            </Link>
-                        </p>
-                    </div>
-                </div>
-
                 <div>
                     <button
                         type="submit"

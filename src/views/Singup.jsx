@@ -65,10 +65,10 @@ export default function Singup() {
     return (
         <>
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-                Créer votre compt gratuitement
+                Créez votre compte gratuitement
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
-                Vous avez de compte ?{' '}
+                Vous avez déjà un compte ?{' '}
 
                 <Link
                     to="/login"
@@ -82,7 +82,7 @@ export default function Singup() {
                 <div className="-space-y-px rounded-md shadow-sm">
                     <div>
                         <label>
-                            Full name
+                            Nom
 
                         </label>
                         <input
@@ -91,7 +91,7 @@ export default function Singup() {
                             value={name}
                             onChange={(event) => setName(event.target.value)}
                             required
-                            placeholder="Full Name"
+                            placeholder="Nom"
                             className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
                         />
                     </div>
@@ -105,13 +105,13 @@ export default function Singup() {
                             onChange={(event) => setEmail(event.target.value)}
                             autoComplete="email"
                             required
-                            placeholder="Email address"
+                            placeholder="e-mail"
                             className="relative block w-full border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
                         />
                     </div>
                     <div>
                         <label>
-                            Password
+                            Mot de passe
                         </label>
                         <input
                             type="password"
@@ -119,20 +119,20 @@ export default function Singup() {
                             onChange={(event) => setPassword(event.target.value)}
                             autoComplete="current-password"
                             required
-                            placeholder="Password"
+                            placeholder="Mot de passe"
                             className="relative block w-full  border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
                         />
                     </div>
                     <div>
                         <label>
-                            Password confiration
+                            Confirmer votre mot de passe
                         </label>
                         <input
                             type="password"
                             value={password_confirmation}
                             onChange={(event) => setPasswordConfirmation(event.target.value)}
                             required
-                            placeholder="Password Confirmation"
+                            placeholder="Confirmer votre mot de passe"
                             className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-yellow-200 sm:text-sm sm:leading-6"
                         />
                     </div>
